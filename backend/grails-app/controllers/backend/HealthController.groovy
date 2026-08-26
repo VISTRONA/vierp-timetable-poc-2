@@ -1,6 +1,6 @@
 package backend
 
-//import grails.converters.JSON - pld thingi
+//import grails.converters.JSON - old thingi
 
 class HealthController {
 
