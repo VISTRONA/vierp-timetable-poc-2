@@ -5,6 +5,7 @@ import org.springframework.web.multipart.MultipartFile
 class TimetableUploadService {
 
     FileStorageService fileStorageService
+    TimetablePipelineService timetablePipelineService
 
     static final long MAX_FILE_SIZE = 10 * 1024 * 1024
 
@@ -49,6 +50,20 @@ class TimetableUploadService {
         }
 
         def storedFile = fileStorageService.save(file)
+
+        Map pipelineResult =
+                timetablePipelineService.runPipeline(storedFile.path)
+
+        if (!pipelineResult.success) {
+            return [
+                    success: false,
+                    status: 500,
+                    error: [
+                            code: 'PIPELINE_FAILED',
+                            message: 'Timetable processing failed.'
+                    ]
+            ]
+        }
 
         return [
                 success: true,
