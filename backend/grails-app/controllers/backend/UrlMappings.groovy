@@ -20,6 +20,12 @@ class UrlMappings {
                 method: "POST"
         )
 
+        "/api/timetable/$className"(
+                controller: "timetable",
+                action: "getTimetable",
+                method: "GET"
+        )
+
         // =========================
         // Default Grails routes
         // =========================

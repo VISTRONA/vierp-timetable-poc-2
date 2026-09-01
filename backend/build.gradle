@@ -53,6 +53,7 @@ dependencies {
     implementation "org.apache.grails:grails-data-hibernate5"
     implementation "org.apache.grails:grails-gsp"
     integrationTestImplementation testFixtures("org.apache.grails:grails-geb")
+    implementation "org.apache.poi:poi-ooxml:5.4.1"
     profile "org.apache.grails.profiles:web"
     runtimeOnly "org.fusesource.jansi:jansi"
     runtimeOnly "com.h2database:h2"
