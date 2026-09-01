@@ -82,4 +82,17 @@ class TimetableController {
                 ])
         )
     }
+    def getClasses() {
+
+        List<String> classes = timetableJsonService.getClasses()
+
+        render(
+                status: 200,
+                contentType: 'application/json',
+                text: groovy.json.JsonOutput.toJson([
+                        success: true,
+                        data: classes
+                ])
+        )
+    }
 }

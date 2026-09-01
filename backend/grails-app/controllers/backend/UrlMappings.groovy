@@ -19,6 +19,11 @@ class UrlMappings {
                 action: "upload",
                 method: "POST"
         )
+        "/api/timetable/classes"(
+                controller:"timetable",
+                action:"getClasses",
+                method:"GET"
+        )
 
         "/api/timetable/$className"(
                 controller: "timetable",
