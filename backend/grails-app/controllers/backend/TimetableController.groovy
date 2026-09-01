@@ -56,15 +56,18 @@ class TimetableController {
     }
     def getTimetable(String className) {
 
-        Map result = timetableJsonService.getTimetable(className)
+        Map timetable = timetableJsonService.getTimetable(className)
 
-        if (!result.success) {
+        if (timetable == null) {
             render(
-                    status: result.status,
+                    status: 404,
                     contentType: 'application/json',
                     text: groovy.json.JsonOutput.toJson([
                             success: false,
-                            error: result.error
+                            error: [
+                                    code: 'TIMETABLE_NOT_FOUND',
+                                    message: "No timetable found for class '${className}'."
+                            ]
                     ])
             )
             return
@@ -75,7 +78,7 @@ class TimetableController {
                 contentType: 'application/json',
                 text: groovy.json.JsonOutput.toJson([
                         success: true,
-                        data: result.data
+                        data: timetable
                 ])
         )
     }

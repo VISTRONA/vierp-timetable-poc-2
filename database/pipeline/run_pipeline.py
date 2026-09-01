@@ -32,10 +32,10 @@ PROJECT_ROOT = os.path.dirname(
     )
 )
 
-EXCEL_FILE = os.path.join(
+UPLOAD_DIR = os.path.join(
     PROJECT_ROOT,
-    "sample-data",
-    "timetable.xlsx"
+    "storage",
+    "uploads"
 )
 
 OUTPUT_DIR = os.path.join(
@@ -63,6 +63,26 @@ def main():
     print("\n========================================")
     print("       VIERP TIMETABLE PIPELINE")
     print("========================================")
+    uploaded_files = [
+            file
+            for file in os.listdir(UPLOAD_DIR)
+            if file.lower().endswith(".xlsx")
+    ]
+
+    if not uploaded_files:
+        raise FileNotFoundError(
+                "No .xlsx timetable file found in storage/uploads."
+            )
+
+    EXCEL_FILE = os.path.join(
+            UPLOAD_DIR,
+            uploaded_files[0]
+        )
+
+    print(
+            "Input Excel file:",
+            EXCEL_FILE
+        )
 
 
     # ------------------------------------------
@@ -196,9 +216,11 @@ def main():
     print("       PIPELINE COMPLETED")
     print("========================================")
 
+    excel_record_count = len(records)
+    records = read_timetable(EXCEL_FILE)
     print(
         "Excel records      :",
-        len(records)
+        excel_record_count
     )
 
     print(

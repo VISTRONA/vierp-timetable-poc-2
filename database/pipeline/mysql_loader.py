@@ -1,13 +1,16 @@
 import mysql.connector
+import os
+from dotenv import load_dotenv
 
-
+load_dotenv()
+password_U = os.getenv("password")
 def get_connection():
 
     return mysql.connector.connect(
         host="localhost",
         port=3306,
         user="root",
-        password="root@123",
+        password=password_U,
         database="vierp_timetable_poc"
     )
 

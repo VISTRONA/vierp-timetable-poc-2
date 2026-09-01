@@ -8,65 +8,21 @@ class TimetableJsonService {
         return "${System.getProperty('user.dir')}/../storage/timetable-json"
     }
 
+    String cleanFilename(String className) {
+        return className.replaceAll(/\s+/, "_") + ".json"
+    }
+
     Map getTimetable(String className) {
 
-        if (!className) {
-            return [
-                    success: false,
-                    status: 400,
-                    error: [
-                            code: 'INVALID_CLASS_NAME',
-                            message: 'Class name is required.'
-                    ]
-            ]
+        String filename = cleanFilename(className)
+        File jsonFile = new File(getJsonDirectory(), filename)
+
+        if (!jsonFile.exists()) {
+            return null
         }
 
-        File directory = new File(jsonDirectory)
-        if (!directory.exists()) {
-            return [
-                    success: false,
-                    status: 404,
-                    error: [
-                            code: 'TIMETABLE_DIRECTORY_NOT_FOUND',
-                            message: 'Timetable JSON storage directory does not exist.'
-                    ]
-            ]
-        }
+        def json = new JsonSlurper().parse(jsonFile)
 
-        File jsonFile = new File(
-                directory,
-                "${className}.json"
-        )
-
-        if (!jsonFile.exists() || !jsonFile.isFile()) {
-            return [
-                    success: false,
-                    status: 404,
-                    error: [
-                            code: 'TIMETABLE_NOT_FOUND',
-                            message: "No timetable found for class '${className}'."
-                    ]
-            ]
-        }
-
-        try {
-            def data = new JsonSlurper().parse(jsonFile)
-
-            return [
-                    success: true,
-                    status: 200,
-                    data: data
-            ]
-
-        } catch (Exception e) {
-            return [
-                    success: false,
-                    status: 500,
-                    error: [
-                            code: 'INVALID_JSON',
-                            message: 'Timetable JSON could not be read.'
-                    ]
-            ]
-        }
+        return json as Map
     }
 }
