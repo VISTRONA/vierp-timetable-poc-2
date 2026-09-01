@@ -124,6 +124,9 @@ def import_timetable(records):
 
     try:
 
+        cursor.execute("DELETE FROM timetable_entries")
+        cursor.execute("DELETE FROM divisions")
+
         for record in records:
             insert_timetable_record(
                 cursor,

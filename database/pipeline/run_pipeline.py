@@ -251,4 +251,8 @@ def main(excel_file=None):
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+
+    excel_file = sys.argv[1] if len(sys.argv) > 1 else None
+
+    main(excel_file)
