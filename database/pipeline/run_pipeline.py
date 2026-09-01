@@ -58,31 +58,40 @@ def clean_filename(division_name):
 # Main Pipeline
 # --------------------------------------------------
 
-def main():
+def main(excel_file=None):
 
     print("\n========================================")
     print("       VIERP TIMETABLE PIPELINE")
     print("========================================")
-    uploaded_files = [
+
+    if excel_file is None:
+        uploaded_files = [
             file
             for file in os.listdir(UPLOAD_DIR)
             if file.lower().endswith(".xlsx")
-    ]
+        ]
 
-    if not uploaded_files:
-        raise FileNotFoundError(
+        if not uploaded_files:
+            raise FileNotFoundError(
                 "No .xlsx timetable file found in storage/uploads."
             )
 
-    EXCEL_FILE = os.path.join(
+        EXCEL_FILE = os.path.join(
             UPLOAD_DIR,
             uploaded_files[0]
         )
+    else:
+        EXCEL_FILE = excel_file
+
+        if not os.path.isfile(EXCEL_FILE):
+            raise FileNotFoundError(
+                f"Excel file not found: {EXCEL_FILE}"
+            )
 
     print(
-            "Input Excel file:",
-            EXCEL_FILE
-        )
+        "Input Excel file:",
+        EXCEL_FILE
+    )
 
 
     # ------------------------------------------
@@ -97,6 +106,7 @@ def main():
         "Excel records read:",
         len(records)
     )
+    excel_record_count = len(records)
 
 
     # ------------------------------------------
@@ -216,8 +226,7 @@ def main():
     print("       PIPELINE COMPLETED")
     print("========================================")
 
-    excel_record_count = len(records)
-    records = read_timetable(EXCEL_FILE)
+
     print(
         "Excel records      :",
         excel_record_count
