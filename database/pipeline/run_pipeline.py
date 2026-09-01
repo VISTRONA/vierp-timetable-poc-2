@@ -176,6 +176,20 @@ def main(excel_file=None):
         exist_ok=True
     )
 
+    for old_file in os.listdir(OUTPUT_DIR):
+
+        old_path = os.path.join(
+            OUTPUT_DIR,
+            old_file
+        )
+
+        if os.path.isfile(old_path) and old_file.lower().endswith(".json"):
+            os.remove(old_path)
+
+            print(
+                f"Removed old JSON: {old_file}"
+            )
+
     divisions = get_divisions()
 
     print(
