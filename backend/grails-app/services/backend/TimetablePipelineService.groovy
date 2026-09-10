@@ -5,6 +5,7 @@ class TimetablePipelineService {
     Map runPipeline(String excelFilePath) {
 
         File projectRoot = new File("..").canonicalFile
+
         File script = new File(
                 projectRoot,
                 "database/pipeline/run_pipeline.py"
@@ -13,12 +14,21 @@ class TimetablePipelineService {
         if (!script.exists()) {
             return [
                     success: false,
-                    error: "Pipeline script not found."
+                    error: "Pipeline script not found: ${script.absolutePath}"
+            ]
+        }
+
+        String pythonCommand = findPythonCommand()
+
+        if (pythonCommand == null) {
+            return [
+                    success: false,
+                    error: "Python was not found. Install Python and make sure it is available in PATH."
             ]
         }
 
         ProcessBuilder processBuilder = new ProcessBuilder(
-                "python3",
+                pythonCommand,
                 script.absolutePath,
                 excelFilePath
         )
@@ -39,5 +49,33 @@ class TimetablePipelineService {
                 exitCode: exitCode,
                 output: output
         ]
+    }
+
+    private String findPythonCommand() {
+
+        List<String> commands = [
+                "python3",
+                "python"
+        ]
+
+        for (String command : commands) {
+            try {
+                Process process = new ProcessBuilder(
+                        command,
+                        "--version"
+                )
+                        .redirectErrorStream(true)
+                        .start()
+
+                int exitCode = process.waitFor()
+
+                if (exitCode == 0) {
+                    return command
+                }
+            } catch (Exception ignored) {
+            }
+        }
+
+        return null
     }
 }

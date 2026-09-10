@@ -40,6 +40,15 @@ Version  : Git
 1. REQUIREMENTS
 ---------------
 
+Install python requirements:
+On windows +  linux:
+python -m pip install -r database/pipeline/requirements.txt
+
+On linux:
+python3 -m pip install -r database/pipeline/requirements.txt
+
+
+
 Install:
 
 - Git
