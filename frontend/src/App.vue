@@ -177,24 +177,68 @@ async function uploadTimetable() {
   }
 }
 
-function getEntry(day, slotIndex) {
-  if (!timetable.value?.entries) {
+function timeToMinutes(time) {
+  if (!time) {
     return null
   }
 
-  const hour = 8 + slotIndex
+  const parts = String(time).split(':')
 
-  return timetable.value.entries.find(entry => {
+  const hour = parseInt(parts[0], 10)
+  const minute = parseInt(parts[1] || '0', 10)
+
+  if (Number.isNaN(hour) || Number.isNaN(minute)) {
+    return null
+  }
+
+  return hour * 60 + minute
+}
+
+function normalizeSlotTime(time) {
+  const [hourString, minuteString] = time.split(':')
+
+  let hour = parseInt(hourString, 10)
+  const minute = parseInt(minuteString || '0', 10)
+
+  if (hour >= 1 && hour <= 5) {
+    hour += 12
+  }
+
+  return hour * 60 + minute
+}
+
+function getSlotRange(slotIndex) {
+  const [start, end] = slots[slotIndex].split('-')
+
+  return {
+    start: normalizeSlotTime(start),
+    end: normalizeSlotTime(end)
+  }
+}
+
+function getEntries(day, slotIndex) {
+  if (!timetable.value?.entries) {
+    return []
+  }
+
+  const slot = getSlotRange(slotIndex)
+
+  return timetable.value.entries.filter(entry => {
     if (entry.day !== day) {
       return false
     }
 
-    const startHour = parseInt(
-      String(entry.start_time).split(':')[0],
-      10
-    )
+    const entryStart = timeToMinutes(entry.start_time)
+    const entryEnd = timeToMinutes(entry.end_time)
 
-    return startHour === hour
+    if (entryStart === null || entryEnd === null) {
+      return false
+    }
+
+    return (
+      entryStart < slot.end &&
+      entryEnd > slot.start
+    )
   })
 }
 
@@ -264,7 +308,7 @@ onMounted(async () => {
           AP
         </div>
 
-        <strong>ANEESH PADOLE</strong>
+        <strong>Tom Holland</strong>
 
         <span class="active-badge">
           <span class="active-dot"></span>
@@ -447,25 +491,33 @@ onMounted(async () => {
               >
 
                 <div
-                  v-if="getEntry(day, slotIndex)"
+                  v-for="entry in getEntries(day, slotIndex)"
+                  :key="`${entry.division}-${entry.student_group}-${entry.subject}-${entry.teacher}-${entry.room}-${entry.start_time}-${entry.end_time}`"
                   class="class-card"
-                  :class="getCardClass(getEntry(day, slotIndex))"
+                  :class="getCardClass(entry)"
                 >
 
                   <div class="teacher">
-                    {{ getEntry(day, slotIndex).teacher }}
+                    {{ entry.teacher }}
                   </div>
 
                   <div class="subject">
-                    {{ getEntry(day, slotIndex).subject }}
+                    {{ entry.subject }}
+                  </div>
+
+                  <div
+                    v-if="entry.student_group"
+                    class="student-group"
+                  >
+                    {{ entry.student_group }}
                   </div>
 
                   <div class="type">
-                    {{ getEntry(day, slotIndex).type }}
+                    {{ entry.type }}
                   </div>
 
                   <div class="room">
-                    {{ getEntry(day, slotIndex).room }}
+                    {{ entry.room }}
                   </div>
 
                 </div>
